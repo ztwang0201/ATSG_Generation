@@ -1,7 +1,7 @@
 import json
-from graphviz import Digraph
-# object -> components（部品)とツール。物体検出で見られるもの全て
-# components -> 組み立て部品。部品間で親子関係が存在
+import networkx as nx
+import pygraphviz
+import pylab as plt
 from pprint import pprint
 
 
@@ -58,7 +58,7 @@ def sort_by_components_hierarchy(ob_list, product_name, hierarchy_data):
     return components_hierarchy
 
 
-# 部品の上下関係から親部品を決定(便宜上、親部品をparent componentと呼ぶ)
+# 部品の大小関係から主要子部品を決定(便宜上、主要子部品をparent, 従属子部品をcomponentと呼ぶ)
 def set_parent_component(components_hierarchy, ob_nodes, step_index, object_name, hierarchy_data):
     parent = None
     ob_list = []
@@ -74,116 +74,10 @@ def set_parent_component(components_hierarchy, ob_nodes, step_index, object_name
             continue
         break
 
-    # 親部品がリストに存在しない場合
+    # 主要子部品がリストに存在しない場合
     if parent is None:
         parent = object_name
     return parent
-
-
-# 　_modと旧プログラム差し替える？（8/13時点では未使用）
-def set_parent_component_mod(components_hierarchy, ob_nodes, step_index, object_name, hierarchy_data):
-    parent = None
-    ob_list = []
-    for item in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
-        if item not in ob_list:  # _mod ではこの処理を追加
-            ob_list.append(item[0])
-            sorted_ob_list = sort_by_components_hierarchy(ob_list, None, hierarchy_data)
-
-    for components_name in sorted_ob_list:
-        for parent_candidate in components_hierarchy:
-            if components_name == parent_candidate:
-                parent = parent_candidate
-                break
-        else:
-            continue
-        break
-
-    # 親部品がリストに存在しない場合
-    if parent is None:
-        parent = object_name
-    return parent
-
-
-# sub-graph生成用子部品設定
-def set_child_components(step_index, ob_nodes, parent):
-    # 子部品情報を抽出
-    children = ""
-    for child in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
-        child_name = child[0]
-        child_node_num = child[1]
-
-        # 子部品と既出の親部品と同名の部品（1つめの親部品以外を子部品扱いする）
-        if child_name != parent or child_node_num > 1:
-            children += " " + str(child_name)
-
-    return children
-
-def set_child_components_list(step_index, ob_nodes, parent, child_components_list):
-    # 子部品情報を抽出
-    for child in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
-        child_name = child[0]
-        child_node_num = child[1]
-        # 子部品と既出の親部品と同名の部品（1つめの親部品以外を子部品扱いする）
-        if child_name != parent or child_node_num > 1:
-            child_base_name = set_object_base_name(child_name, child_node_num)
-            if child_base_name not in child_components_list:
-                child_components_list.append(set_object_base_name(child_name, child_node_num))
-
-    # グラフが枝分かれした状態で、同時に複数の親部品が存在したいる場合、問題が生じる
-    # -> child_components_listを多次元化して、各支流ごとに子部品情報を保持
-    # -> 支流の発生、合流はどのように判断する？　発生：inputに子部品を持つノードが存在しない。 合流: inputに子部品を持つノードが複数存在
-    # -> （グラフ生成中）各支流の最下流にある（子部品を持つ）親部品をリスト化？　各支流毎にクラスを生成して、情報を保持させる？
-    child_components_list = sorted(child_components_list)
-    children = ""
-    # for item in child_components_list:
-    #     children += " " + item
-    run_once = True
-    for item in child_components_list:
-        if run_once:
-            children += item
-            run_once = False
-        else:
-            if str(1) in item:
-                children += "|" + item
-            else:
-                children += " " + item
-
-    return children, child_components_list
-
-
-def set_child_components_list_mod(step_index, ob_nodes, parent, child_components_list, parent_components_list):
-    # 子部品情報を抽出
-    child_components_list_for_new_parent = []  # 枝分かれ構造用（暫定プログラム）
-    for child in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
-        child_name = child[0]
-        child_node_num = child[1]
-        # 子部品と既出の親部品と同名の部品（1つめの親部品以外を子部品扱いする）
-        if child_name != parent or child_node_num > 1:
-            child_base_name = set_object_base_name(child_name, child_node_num)
-            if child_base_name not in child_components_list:
-                child_components_list.append(set_object_base_name(child_name, child_node_num))
-
-            # 枝分かれ構造用（暫定プログラム）
-            if parent not in parent_components_list:
-                child_components_list_for_new_parent.append(set_object_base_name(child_name, child_node_num))
-
-    # -> child_components_listを多次元化して、各支流ごとに子部品情報を保持
-    # -> 支流の発生、合流はどのように判断する？　発生：inputに子部品を持つノードが存在しない。 合流: inputに子部品を持つノードが複数存在
-    # -> （グラフ生成中）各支流の最下流にある（子部品を持つ）親部品をリスト化？　各支流毎にクラスを生成して、情報を保持させる？
-    child_components_list = sorted(child_components_list)
-    children = ""
-    for item in child_components_list:
-        children += " " + item
-
-    # 枝分かれ構造用（暫定プログラム）
-    if parent not in parent_components_list:
-        child_components_list_for_new_parent = sorted(child_components_list_for_new_parent)
-        children = ""
-        for item in child_components_list_for_new_parent:
-            children += " " + item
-
-    return children, child_components_list
-
 
 def set_child_components_list_for_branches(step_index, ob_nodes, parent, parent_components_list,
                                            components_of_each_branch):
@@ -193,7 +87,7 @@ def set_child_components_list_for_branches(step_index, ob_nodes, parent, parent_
         for child in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
             child_name = child[0]
             child_node_num = child[1]
-            # 子部品と既出の親部品と同名の部品（1つめの親部品以外を子部品扱いする）
+            # 従属子部品と既出の主要子部品と同名の部品（1つめの主要子部品以外を従属子部品扱いする）
             if child_name != parent or child_node_num > 1:
                 child_base_name = set_object_base_name(child_name, child_node_num)
                 if child_base_name not in child_components_list:
@@ -205,13 +99,13 @@ def set_child_components_list_for_branches(step_index, ob_nodes, parent, parent_
     # 既出のparentのbranch
     else:
         for index, item in enumerate(components_of_each_branch):
-            # 現在のparentへ子部品を追加
+            # 現在のparentへ従属子部品を追加
             if parent == item[0]:
                 child_components_list = components_of_each_branch[index][1]
                 for child in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
                     child_name = child[0]
                     child_node_num = child[1]
-                    # 子部品と既出の親部品と同名の部品（1つめの親部品以外を子部品扱いする）
+                    # 従属子部品と既出の主要子部品と同名の部品（1つめの主要子部品以外を従属子部品扱いする）
                     if child_name != parent or child_node_num > 1:
                         child_base_name = set_object_base_name(child_name, child_node_num)
                         if child_base_name not in child_components_list:
@@ -224,8 +118,6 @@ def set_child_components_list_for_branches(step_index, ob_nodes, parent, parent_
     current_child_components_list = components_of_each_branch[current_branch][1]
     current_child_components_list = sorted(current_child_components_list)
     children = ""
-    # for item in current_child_components_list:
-    #     children += " " + item
 
     # 名前の設定形式に依存しないプログラムにしたい...
     run_once = True
@@ -245,9 +137,85 @@ def set_child_components_list_for_branches(step_index, ob_nodes, parent, parent_
             #     children += " " + item
 
     # print(step_index + 1)
-    # print(parent, current_child_components_list)
+    # print(child_components_list)
+    print(parent, current_child_components_list)
     # pprint(components_of_each_branch)
     # print('----------------------------------------------')
+    return children, current_child_components_list, components_of_each_branch
+
+def set_child_components_list_dev(step_index, ob_nodes, parent, parent_components_list,
+                                           components_of_each_branch):
+    # 新規のparentのbranch
+    if parent not in parent_components_list:
+        child_components_list = []
+        for child in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
+            child_name = child[0]
+            child_node_num = child[1]
+            # 従属子部品と既出の主要子部品と同名の部品（1つめの主要子部品以外を従属子部品扱いする）
+            if child_name != parent or child_node_num > 1:
+                child_base_name = set_object_base_name(child_name, child_node_num)
+                if child_base_name not in child_components_list:
+                    child_components_list.append(set_object_base_name(child_name, child_node_num))
+
+        components_of_each_branch.append([parent, child_components_list])
+        current_branch = len(components_of_each_branch) - 1
+
+    # 既出のparentのbranch
+    else:
+        for index, item in enumerate(components_of_each_branch):
+            # 現在のparentへ従属子部品を追加
+            if parent == item[0]:
+                child_components_list = components_of_each_branch[index][1]
+                for child in ob_nodes[step_index]:  # ob_nodes = [step number][0:object name, 1:node_index]
+                    child_name = child[0]
+                    child_node_num = child[1]
+                    child_base_name = set_object_base_name(child_name, child_node_num)
+
+                    # 異なるブランチが結合する場合，結合される従属子部品情報を継承
+                    if child_name != parent and child_name in parent_components_list:
+                        if child_base_name not in child_components_list:
+                            for ignore, item_of_comp in enumerate(components_of_each_branch):
+                                if item_of_comp[0] == child_name:
+                                    for index_of_children in range(len(item_of_comp[1])):
+                                        child_components_list.append(item_of_comp[1][index_of_children])
+
+                    # 従属子部品と既出の主要子部品と同名の部品（1つめの主要子部品以外を従属子部品扱いする）
+                    if child_name != parent or child_node_num > 1:
+                        if child_base_name not in child_components_list:
+                            child_components_list.append(child_base_name)
+
+
+
+                components_of_each_branch[index] = [parent, child_components_list]
+                current_branch = index
+                break
+
+    current_child_components_list = components_of_each_branch[current_branch][1]
+    current_child_components_list = sorted(current_child_components_list)
+    children = ""
+
+    # 名前の設定形式に依存しないプログラムにしたい...
+    run_once = True
+    for item in current_child_components_list:
+        if run_once:
+            children += item
+            run_once = False
+        else:
+            if "1" in item:
+                children += "|" + item
+            else:
+                children += " " + item
+
+            # if "shelf" in item and "2" in item:
+            #     children += "|" + item
+            # else:
+            #     children += " " + item
+
+    print(step_index + 1)
+    print(child_components_list)
+    # print(parent, current_child_components_list)
+    # pprint(components_of_each_branch)
+    print('----------------------------------------------')
     return children, current_child_components_list, components_of_each_branch
 
 
@@ -289,6 +257,47 @@ def expand_assembly_unit(ob_nodes):
     # print("--------------------------")
     # pprint(new_ob_nodes)
     return new_ob_nodes
+
+def expand_au_list(ob_nodes, components_hierarchy, hierarchy_data):
+    # 別ファイルで管理する？
+    fastener_list = ["screw"]
+    expanded_au_list = []
+    assembled_sub_comp_list = []
+
+    for step_index in range(len(ob_nodes)):
+         # fastenerが複数の場合に未対応！！！
+        sub_comp_list = []
+        run_once = True
+
+        # 主要子部品と留具以外の従属子部品のオブジェクトを抽出
+        for item in ob_nodes[step_index]:
+            object_name = item[0]
+            object_index = item[1]
+
+            parent = set_parent_component(components_hierarchy, ob_nodes, step_index, "ignore", hierarchy_data)
+            if object_name == parent and run_once:
+                main_comp = [object_name, object_index]
+                run_once = False
+
+            elif object_name not in fastener_list:
+                sub_comp_list.append([object_name, object_index])
+
+
+
+        for item in ob_nodes[step_index]:
+            object_name = item[0]
+            object_index = item[1]
+            if object_name in fastener_list:
+                sub_comp_list.append([object_name, object_index])
+
+
+        for sub_comp in sub_comp_list:
+            if sub_comp not in assembled_sub_comp_list:
+                expanded_au_list.append([main_comp, sub_comp])
+                assembled_sub_comp_list.append(sub_comp)
+
+    # pprint(expanded_au_list)
+    return expanded_au_list
 
 
 def estimate_motion(step_index, ob_nodes):
@@ -352,64 +361,51 @@ def create_motion_node(dg, step, motion):
     name = set_motion_node_name(step, motion)
     # label = "%s. " % step + motion
     label = motion
-    dg.attr('node', shape='oval')
-    dg.node(name, label=label)
-
+    dg.add_node(name, label = label, shape='oval')
 
 def create_in_node(dg, step, object_name, object_index):
     name = set_in_node_name(step, object_name, object_index)
     label = object_name + "(%s)" % object_index
-    dg.attr('node', shape='record')
-    dg.node(name, label=label)
+    dg.add_node(name, label = label, shape='record')
 
 
 def create_out_node(dg, step, object_name, object_index, children):
     name = set_out_node_name(step, object_name, object_index)
     label = object_name + "(%s)" % object_index
-    dg.attr('node', shape='record')
-    dg.node(name, label='{' + '{' + label + '}' + '|' + '{' + children + '}' + '}')
+
+    # 個数のみ表示するように変更！！
+    # label属性ではなくchildren属性として，従属子部品情報をもたせる
+    dg.add_node(name, label = '{' + '{' + label + '}' + '|' + '{' + children + '}' + '}', shape='record')
+
+def create_out_node_dev(dg, step, object_name, object_index, children):
+    name = set_out_node_name(step, object_name, object_index)
+    label = object_name + "(%s)" % object_index
+
+    #　製作中.....
+    # 直前の子部品情報を継承できるようにする．childreを生成する関数にノード情報を用いて子部品を決定する方が良い？？
+    # 現段階では枝分かれの際の子部品情報が消失している
+
+
+    # 個数のみ表示するように変更！！
+    # label属性ではなくchildren属性として，従属子部品情報をもたせる
+    dg.add_node(name, label = '{' + '{' + label + '}' + '|' + '{' + children + '}' + '}',
+                shape='record', main_comp = label, sub_comps = sub_comps)
 
 
 def in2motion_edge(dg, step, motion, object_name, object_index):
     in_node = set_in_node_name(step, object_name, object_index)
     motion_node = set_motion_node_name(step, motion)
-    dg.edge(in_node, motion_node)
-
+    dg.add_edge(in_node, motion_node)
 
 def motion2out_edge(dg, step, motion, object_name, object_index):
     out_node = set_out_node_name(step, object_name, object_index)
     motion_node = set_motion_node_name(step, motion)
-    dg.edge(motion_node, out_node)
+    dg.add_edge(motion_node, out_node)
 
 
-def create_sub_graph(dg, yolo_data, hierarchy_data, ob_nodes):
-    for step_index in range(len(yolo_data)):
-        step = step_index + 1
-        motion = "assembly"
-        create_motion_node(dg, step, motion)
-
-        for item in ob_nodes[step_index]:
-            object_name = item[0]
-            object_index = item[1]
-
-            create_in_node(dg, step, object_name, object_index)
-            in2motion_edge(dg, step, motion, object_name, object_index)
-
-            parent = set_parent_component(components_hierarchy, ob_nodes, step_index, object_name, hierarchy_data)
-            if object_name == parent and object_index == 1:
-                # children= set_child_components(step_index, ob_nodes, parent)
-                child_components_list = []  # 毎回初期化．create_sub_graphでは使用しない．
-                children, child_components_list = set_child_components_list(step_index, ob_nodes, parent,
-                                                                            child_components_list)
-
-                create_out_node(dg, step, object_name, object_index, children)
-                motion2out_edge(dg, step, motion, object_name, object_index)
-
-
-def create_sequence_graph(dg, hierarchy_data, ob_nodes):
+def generate_atsg(dg, hierarchy_data, ob_nodes):
     in_node_base_name_list = []
     out_node_base_name_list = []
-
     child_components_list = []
     parent_components_list = []
     pre_step_child_components_list = []
@@ -423,6 +419,9 @@ def create_sequence_graph(dg, hierarchy_data, ob_nodes):
     step_of_inheriable_node = []
     inherited_node_list = []
 
+    # ob_nodes = expand_assembly_unit(ob_nodes)
+    ob_nodes = expand_au_list(ob_nodes, components_hierarchy, hierarchy_data)
+
     for step_index in range(len(ob_nodes)):
         step = step_index + 1
         motion = estimate_motion_mod(step_index, ob_nodes, pre_step_child_components_list)
@@ -432,7 +431,7 @@ def create_sequence_graph(dg, hierarchy_data, ob_nodes):
             object_name = item[0]
             object_index = item[1]
 
-            # 子部品になっていないinput nodeとedge生成
+            # 従属子部品になっていないinput nodeとedge生成
             object_base_name = set_object_base_name(object_name, object_index)
 
             # input object
@@ -449,89 +448,7 @@ def create_sequence_graph(dg, hierarchy_data, ob_nodes):
             # output object (parent component)
             parent = set_parent_component(components_hierarchy, ob_nodes, step_index, object_name, hierarchy_data)
             if object_name == parent and object_index == 1:
-                children, child_components_list, components_of_each_branch = set_child_components_list_for_branches(
-                    step_index, ob_nodes, parent,
-                    parent_components_list, components_of_each_branch)
-                # print(children, child_components_list)
-                create_out_node(dg, step, object_name, object_index, children)
-                motion2out_edge(dg, step, motion, object_name, object_index)
-
-                parent_components_list.append(parent)  # 枝分かれ構造用（算定プログラム）
-
-                out_node_base_name_list.append(
-                    set_object_base_name(object_name, object_index))  # object_name[object_index]
-                inheritable_node_list.append(set_out_node_name(step, object_name, object_index))
-                step_of_inheriable_node.append(step)
-
-        for item in child_components_list:
-            if item not in pre_step_child_components_list:
-                pre_step_child_components_list.append(item)
-
-    # output nodeと重複するinput nodeを除去
-    for out_node_index, out_node_base_name in enumerate(out_node_base_name_list):
-        for in_node_index, in_node_base_name in enumerate(in_node_base_name_list):
-            if out_node_base_name == in_node_base_name:
-                removable_node = removable_node_list[in_node_index]
-
-                for body_str in dg.body:
-                    if removable_node in body_str:
-                        inherited_node = inheritable_node_list[out_node_index]
-                        if step_of_removable_node[in_node_index] > step_of_inheriable_node[out_node_index]:
-                            if inherited_node not in inherited_node_list:
-
-                                dg.body.remove(dg.body[dg.body.index(body_str) + 1])
-                                dg.body.remove(body_str)
-
-                                dst_motion_node = dst_motion_node_list[in_node_index]
-
-                                inherited_node_list.append(inherited_node)
-
-
-def create_exp_sequence_graph(dg, hierarchy_data, ob_nodes):
-    in_node_base_name_list = []
-    out_node_base_name_list = []
-    child_components_list = []
-    parent_components_list = []
-    pre_step_child_components_list = []
-    components_of_each_branch = []
-
-    removable_node_list = []
-    inheritable_node_list = []
-    dst_motion_node_list = []
-
-    step_of_removable_node = []
-    step_of_inheriable_node = []
-    inherited_node_list = []
-
-    ob_nodes = expand_assembly_unit(ob_nodes)
-
-    for step_index in range(len(ob_nodes)):
-        step = step_index + 1
-        motion = estimate_motion_mod(step_index, ob_nodes, pre_step_child_components_list)
-        create_motion_node(dg, step, motion)
-
-        for item in ob_nodes[step_index]:
-            object_name = item[0]
-            object_index = item[1]
-
-            # 子部品になっていないinput nodeとedge生成
-            object_base_name = set_object_base_name(object_name, object_index)
-
-            # input object
-            if object_base_name not in pre_step_child_components_list:
-                create_in_node(dg, step, object_name, object_index)
-                in2motion_edge(dg, step, motion, object_name, object_index)
-
-                in_node_base_name_list.append(
-                    set_object_base_name(object_name, object_index))  # object_name[object_index]
-                removable_node_list.append(set_in_node_name(step, object_name, object_index))
-                step_of_removable_node.append(step)
-                dst_motion_node_list.append(set_motion_node_name(step, motion))
-
-            # output object (parent component)
-            parent = set_parent_component(components_hierarchy, ob_nodes, step_index, object_name, hierarchy_data)
-            if object_name == parent and object_index == 1:
-                children, child_components_list, components_of_each_branch = set_child_components_list_for_branches(
+                children, child_components_list, components_of_each_branch = set_child_components_list_dev(
                     step_index, ob_nodes, parent,
                     parent_components_list, components_of_each_branch)
 
@@ -555,19 +472,27 @@ def create_exp_sequence_graph(dg, hierarchy_data, ob_nodes):
             if out_node_base_name == in_node_base_name:
                 removable_node = removable_node_list[in_node_index]
 
-                for body_str in dg.body:
-                    if removable_node in body_str:
+                remove_node_list = []
+                add_edge_list = []
+                for object_node in dg.nodes():
+                    if object_node == removable_node:
                         inherited_node = inheritable_node_list[out_node_index]
                         if step_of_removable_node[in_node_index] > step_of_inheriable_node[out_node_index]:
                             if inherited_node not in inherited_node_list:
-                                dg.body.remove(dg.body[dg.body.index(body_str) + 1])
-                                dg.body.remove(body_str)
+                                remove_node_list.append(object_node)
                                 dst_motion_node = dst_motion_node_list[in_node_index]
-                                dg.edge(inherited_node, dst_motion_node)
+                                add_edge_list.append([inherited_node, dst_motion_node])
                                 inherited_node_list.append(inherited_node)
 
+                for item in remove_node_list:
+                    dg.remove_node(item)
+                for item in add_edge_list:
+                    dg.add_edge(item[0], item[1])
 
-yolo_file_path = './data/office_chair.json'
+
+
+
+yolo_file_path = './data/work_chair.json'
 with open(yolo_file_path) as yf:
     yolo_data = json.load(yf)
 
@@ -576,20 +501,18 @@ with open(hierarchy_file_path) as hf:
     hierarchy_data = json.load(hf)
 
 ob_nodes, ob_list = create_object_node_list(yolo_data)  # ob_node: step毎のオブジェクト情報, ob_list: 全stepでのオブジェクトの種類のリスト
-product_name = "office_chair"
+product_name = "work_chair"
 components_hierarchy = sort_by_components_hierarchy(ob_list, product_name, hierarchy_data)  # 全部品の親子関係を定義
 
-# sub-graphs
-# d_sub_graph = Digraph(format="jpg")
-# create_sub_graph(d_sub_graph, yolo_data, hierarchy_data, ob_nodes)
-# d_sub_graph.render("assembly-unit")
+# ATSG
+G = nx.DiGraph()
+generate_atsg(G, hierarchy_data, ob_nodes)
+ag = nx.nx_agraph.to_agraph(G)
+ag.write('test.dot')
+ag.draw('test.pdf', prog='dot')
 
-# Sequence-graph
-# d_seq_graph = Digraph(format="jpg")
-# create_sequence_graph(d_seq_graph, hierarchy_data, ob_nodes)
-# d_seq_graph.render("sequence-graph")
+expand_au_list(ob_nodes, components_hierarchy, hierarchy_data)
 
-# Expanded Sequence-graph
-d_exp_seq_graph = Digraph(format="pdf")
-create_exp_sequence_graph(d_exp_seq_graph, hierarchy_data, ob_nodes)
-d_exp_seq_graph.render("expanded_sequence-graph")
+# dg = nx.DiGraph()
+# generate_atsg(dg, hierarchy_data, ob_nodes)
+# nx.nx_agraph.view_pygraphviz(dg, prog='fdp')

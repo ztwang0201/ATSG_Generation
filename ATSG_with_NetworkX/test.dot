@@ -1,0 +1,159 @@
+strict digraph "" {
+	node [label="\N"];
+	"1-place"	 [label=place,
+		shape=oval];
+	"1-seat(1)_out"	 [label="{{seat(1)}|{seat_plate(1)}}",
+		shape=record];
+	"1-place" -> "1-seat(1)_out";
+	"1-seat(1)_in"	 [label="seat(1)",
+		shape=record];
+	"1-seat(1)_in" -> "1-place";
+	"2-insert"	 [label=insert,
+		shape=oval];
+	"1-seat(1)_out" -> "2-insert";
+	"1-seat_plate(1)_in"	 [label="seat_plate(1)",
+		shape=record];
+	"1-seat_plate(1)_in" -> "1-place";
+	"2-seat(1)_out"	 [label="{{seat(1)}|{screw(1)|seat_plate(1)}}",
+		shape=record];
+	"2-insert" -> "2-seat(1)_out";
+	"3-insert"	 [label=insert,
+		shape=oval];
+	"2-seat(1)_out" -> "3-insert";
+	"2-screw(1)_in"	 [label="screw(1)",
+		shape=record];
+	"2-screw(1)_in" -> "2-insert";
+	"3-seat(1)_out"	 [label="{{seat(1)}|{screw(1) screw(2)|seat_plate(1)}}",
+		shape=record];
+	"3-insert" -> "3-seat(1)_out";
+	"4-insert"	 [label=insert,
+		shape=oval];
+	"3-seat(1)_out" -> "4-insert";
+	"3-screw(2)_in"	 [label="screw(2)",
+		shape=record];
+	"3-screw(2)_in" -> "3-insert";
+	"4-seat(1)_out"	 [label="{{seat(1)}|{screw(1) screw(2) screw(3)|seat_plate(1)}}",
+		shape=record];
+	"4-insert" -> "4-seat(1)_out";
+	"5-insert"	 [label=insert,
+		shape=oval];
+	"4-seat(1)_out" -> "5-insert";
+	"4-screw(3)_in"	 [label="screw(3)",
+		shape=record];
+	"4-screw(3)_in" -> "4-insert";
+	"5-seat(1)_out"	 [label="{{seat(1)}|{screw(1) screw(2) screw(3) screw(4)|seat_plate(1)}}",
+		shape=record];
+	"5-insert" -> "5-seat(1)_out";
+	"6-place"	 [label=place,
+		shape=oval];
+	"5-seat(1)_out" -> "6-place";
+	"5-screw(4)_in"	 [label="screw(4)",
+		shape=record];
+	"5-screw(4)_in" -> "5-insert";
+	"6-seat(1)_out"	 [label="{{seat(1)}|{back_rest(1)|screw(1) screw(2) screw(3) screw(4)|seat_plate(1)}}",
+		shape=record];
+	"6-place" -> "6-seat(1)_out";
+	"7-insert"	 [label=insert,
+		shape=oval];
+	"6-seat(1)_out" -> "7-insert";
+	"6-back_rest(1)_in"	 [label="back_rest(1)",
+		shape=record];
+	"6-back_rest(1)_in" -> "6-place";
+	"7-seat(1)_out"	 [label="{{seat(1)}|{back_rest(1)|screw(1) screw(2) screw(3) screw(4) screw(5)|seat_plate(1)}}",
+		shape=record];
+	"7-insert" -> "7-seat(1)_out";
+	"8-insert"	 [label=insert,
+		shape=oval];
+	"7-seat(1)_out" -> "8-insert";
+	"7-screw(5)_in"	 [label="screw(5)",
+		shape=record];
+	"7-screw(5)_in" -> "7-insert";
+	"8-seat(1)_out"	 [label="{{seat(1)}|{back_rest(1)|screw(1) screw(2) screw(3) screw(4) screw(5) screw(6)|seat_plate(1)}}",
+		shape=record];
+	"8-insert" -> "8-seat(1)_out";
+	"9-insert"	 [label=insert,
+		shape=oval];
+	"8-seat(1)_out" -> "9-insert";
+	"8-screw(6)_in"	 [label="screw(6)",
+		shape=record];
+	"8-screw(6)_in" -> "8-insert";
+	"9-seat(1)_out"	 [label="{{seat(1)}|{back_rest(1)|screw(1) screw(2) screw(3) screw(4) screw(5) screw(6) screw(7)|seat_plate(1)}}",
+		shape=record];
+	"9-insert" -> "9-seat(1)_out";
+	"10-insert"	 [label=insert,
+		shape=oval];
+	"9-seat(1)_out" -> "10-insert";
+	"9-screw(7)_in"	 [label="screw(7)",
+		shape=record];
+	"9-screw(7)_in" -> "9-insert";
+	"10-seat(1)_out"	 [label="{{seat(1)}|{back_rest(1)|screw(1) screw(2) screw(3) screw(4) screw(5) screw(6) screw(7) screw(8)|seat_plate(1)}}",
+		shape=record];
+	"10-insert" -> "10-seat(1)_out";
+	"17-place"	 [label=place,
+		shape=oval];
+	"10-seat(1)_out" -> "17-place";
+	"10-screw(8)_in"	 [label="screw(8)",
+		shape=record];
+	"10-screw(8)_in" -> "10-insert";
+	"11-insert"	 [label=insert,
+		shape=oval];
+	"11-base(1)_out"	 [label="{{base(1)}|{caster(1)}}",
+		shape=record];
+	"11-insert" -> "11-base(1)_out";
+	"11-base(1)_in"	 [label="base(1)",
+		shape=record];
+	"11-base(1)_in" -> "11-insert";
+	"12-insert"	 [label=insert,
+		shape=oval];
+	"11-base(1)_out" -> "12-insert";
+	"11-caster(1)_in"	 [label="caster(1)",
+		shape=record];
+	"11-caster(1)_in" -> "11-insert";
+	"12-base(1)_out"	 [label="{{base(1)}|{caster(1) caster(2)}}",
+		shape=record];
+	"12-insert" -> "12-base(1)_out";
+	"13-insert"	 [label=insert,
+		shape=oval];
+	"12-base(1)_out" -> "13-insert";
+	"12-caster(2)_in"	 [label="caster(2)",
+		shape=record];
+	"12-caster(2)_in" -> "12-insert";
+	"13-base(1)_out"	 [label="{{base(1)}|{caster(1) caster(2) caster(3)}}",
+		shape=record];
+	"13-insert" -> "13-base(1)_out";
+	"14-insert"	 [label=insert,
+		shape=oval];
+	"13-base(1)_out" -> "14-insert";
+	"13-caster(3)_in"	 [label="caster(3)",
+		shape=record];
+	"13-caster(3)_in" -> "13-insert";
+	"14-base(1)_out"	 [label="{{base(1)}|{caster(1) caster(2) caster(3) caster(4)}}",
+		shape=record];
+	"14-insert" -> "14-base(1)_out";
+	"15-insert"	 [label=insert,
+		shape=oval];
+	"14-base(1)_out" -> "15-insert";
+	"14-caster(4)_in"	 [label="caster(4)",
+		shape=record];
+	"14-caster(4)_in" -> "14-insert";
+	"15-base(1)_out"	 [label="{{base(1)}|{caster(1) caster(2) caster(3) caster(4) caster(5)}}",
+		shape=record];
+	"15-insert" -> "15-base(1)_out";
+	"16-insert"	 [label=insert,
+		shape=oval];
+	"15-base(1)_out" -> "16-insert";
+	"15-caster(5)_in"	 [label="caster(5)",
+		shape=record];
+	"15-caster(5)_in" -> "15-insert";
+	"16-base(1)_out"	 [label="{{base(1)}|{caster(1) caster(2) caster(3) caster(4) caster(5)|cylinder(1)}}",
+		shape=record];
+	"16-insert" -> "16-base(1)_out";
+	"16-base(1)_out" -> "17-place";
+	"16-cylinder(1)_in"	 [label="cylinder(1)",
+		shape=record];
+	"16-cylinder(1)_in" -> "16-insert";
+	"17-seat(1)_out"	 [label="{{seat(1)}|{back_rest(1)|base(1)|caster(1) caster(2) caster(3) caster(4) caster(5)|cylinder(1)|screw(1) screw(2) screw(3) screw(\
+4) screw(5) screw(6) screw(7) screw(8)|seat_plate(1)}}",
+		shape=record];
+	"17-place" -> "17-seat(1)_out";
+}

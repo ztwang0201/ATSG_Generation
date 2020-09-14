@@ -1,0 +1,50 @@
+{
+  "steel_rack": [
+    "shelf",
+    "pole",
+    "sleeve",
+    "bolt",
+    "nut",
+    "washer"
+        ],
+
+  "table": [
+    "plate",
+    "leg",
+    "bolt",
+    "nut",
+    "washer"
+        ],
+
+    "office_chair": [
+    "seat",
+    "base",
+    "back_rest",
+    "caster",
+    "screw"
+  ],
+
+      "work_chair": [
+    "seat",
+    "base",
+    "back_rest",
+    "caster",
+    "screw"
+  ],
+
+  "all_components": [
+    "seat",
+    "base",
+    "back_rest",
+    "plate",
+    "shelf",
+    "leg",
+    "pole",
+    "caster",
+    "sleeve",
+    "bolt",
+    "screw",
+    "nut",
+    "washer"
+  ]
+}
