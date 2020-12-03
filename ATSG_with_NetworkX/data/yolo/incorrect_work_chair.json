@@ -1,0 +1,46 @@
+[
+  {
+    "step1":
+    ["seat",
+      "seat_plate",
+      "screw",
+      "screw",
+      "screw",
+      "screw"
+    ]
+  },
+  {
+    "step2":
+    ["back_rest",
+      "seat",
+      "seat_plate",
+      "screw",
+      "screw",
+      "screw"
+    ]
+  },
+
+  {
+    "step3":
+    ["caster",
+      "caster",
+      "base"
+    ]
+  },
+  {
+    "step4":
+    ["caster",
+      "base",
+      "cylinder"
+    ]
+  },
+    {
+    "step5":
+    ["caster",
+      "base",
+      "cylinder",
+      "back_rest",
+      "seat"
+    ]
+  }
+]

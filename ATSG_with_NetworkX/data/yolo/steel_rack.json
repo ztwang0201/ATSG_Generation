@@ -1,0 +1,30 @@
+[
+    {
+        "step1": [
+            "pole",
+            "pole",
+            "pole",
+            "pole",
+            "shelf"
+        ]
+    },
+ {
+    "step2": [
+        "pole",
+        "pole",
+        "pole",
+        "pole",
+        "shelf",
+        "shelf"
+    ]
+} , {
+    "step3": [
+        "pole",
+        "pole",
+        "pole",
+        "pole",
+        "shelf",
+        "shelf",
+        "shelf"
+    ]
+}]

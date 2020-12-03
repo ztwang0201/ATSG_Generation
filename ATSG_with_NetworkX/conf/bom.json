@@ -1,0 +1,17 @@
+{
+  "steel_rack": {
+    "shelf": 3,
+    "pole": 4
+  },
+
+  "work_chair": {
+    "seat" : 1,
+    "base": 1,
+    "back_rest": 1,
+    "caster": 5,
+    "cylinder": 1,
+    "screw": 8,
+    "seat_plate": 1
+  }
+
+}
