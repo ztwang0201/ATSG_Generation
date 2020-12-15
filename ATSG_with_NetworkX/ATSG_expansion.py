@@ -519,49 +519,6 @@ def generate_atsg(dg):
 
     return should_regenerate, comp_diff
 
-# keyで目的の物体数が呼び出せるプログラムに変更する！！
-# def add_inserted_fastener2ob_nodes(ob_name_and_index, ob_max_index_dict, fastener_list, pre_num_of_each_fastener):
-#     # BOM情報の取得
-#     if _product_name in bom:
-#         product_bom = bom[_product_name]
-#
-#     if not pre_num_of_each_fastener:
-#         num_of_each_fastener = []
-#         for fastener_name in fastener_list:
-#             num_of_each_fastener.append([fastener_name, 0])
-#     else: # 前stepでの情報の引き継ぎ
-#         num_of_each_fastener = pre_num_of_each_fastener
-#
-#     for fst_item in num_of_each_fastener:
-#         fastener_name = fst_item[0]
-#         for ob_item in ob_name_and_index:
-#             object_name = ob_item[0]
-#
-#             if object_name == fastener_name:
-#                 for pro_item in product_bom:
-#                     if fastener_name == pro_item[0]:
-#                         max_num_of_fastener = float(pro_item[1]) # BOMに記載された部品数
-#                 # BOMの個数以下にnum_of_each_fastenerを設定
-#                 if float(fst_item[1]) < max_num_of_fastener:
-#                     fst_item[1] += 1
-#
-#     for fst_item in num_of_each_fastener:
-#         fastener_name = fst_item[0]
-#         fastener_max_index = fst_item[1]
-#
-#         if not ob_max_index_dict.get(fastener_name) is None:
-#             object_max_index = ob_max_index_dict[fastener_name]
-#
-#             while object_max_index < fastener_max_index:
-#                 object_max_index += 1
-#                 ob_name_and_index.append([fastener_name, object_max_index])
-#
-#
-#     print(num_of_each_fastener)
-#     pprint(ob_name_and_index)
-#     print("----------------------------")
-#     return num_of_each_fastener, ob_name_and_index
-
 def add_inserted_fastener2ob_nodes(ob_name_and_index, ob_max_index_dict, fastener_list, product_bom, num_of_fastener_dict):
     if not num_of_fastener_dict:
         for fastener_name in fastener_list:

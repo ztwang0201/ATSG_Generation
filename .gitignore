@@ -1,5 +1,5 @@
-Other/
-ATSG_with_Graphviz/result/
-ATSG_with_Graphviz/data/
+Other/ATSG_with_Graphviz/result/
+Other/ATSG_with_Graphviz/data/
+Other/assembly-sequence-graph-generation/
 ATSG_with_NetworkX/data/result
 ATSG_with_NetworkX/data/test
