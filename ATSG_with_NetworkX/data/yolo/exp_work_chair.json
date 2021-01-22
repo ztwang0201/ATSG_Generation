@@ -1,0 +1,59 @@
+[
+    {
+        "frame1": [
+            "screw",
+            "screw",
+            "screw",
+            "screw",
+            "seat",
+            "seat_plate"
+        ]
+    }
+ , {
+    "frame2": [
+        "back_rest",
+        "screw",
+        "screw",
+        "screw",
+        "screw",
+        "screw",
+        "seat",
+        "seat_plate"
+    ]
+} , {
+    "frame3": [
+        "seat",
+        "seat_plate"
+    ]
+} , {
+    "frame4": [
+        "base",
+        "caster",
+        "caster",
+        "caster",
+        "caster"
+    ]
+} , {
+    "frame5": [
+        "base",
+        "caster",
+        "caster",
+        "caster",
+        "caster",
+        "caster",
+        "cylinder",
+        "cylinder"
+    ]
+} , {
+    "frame6": [
+        "back_rest",
+        "base",
+        "caster",
+        "caster",
+        "caster",
+        "caster",
+        "caster",
+        "cylinder",
+        "seat"
+    ]
+}]

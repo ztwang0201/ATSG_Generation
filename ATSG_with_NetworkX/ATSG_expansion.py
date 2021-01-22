@@ -43,7 +43,7 @@ def create_object_node_list(yolo_data):
 
         # 1つのstepの, 検出物体, step番号をクラスインスタンスに格納し、リストで管理
         data = yolo_data[step_index]
-        sub_graph.append(SubGraph(step, data["step%d" % step]))
+        sub_graph.append(SubGraph(step, data["frame%d" % step]))
 
         # 各ステップにおけるsub-graphの検出物体名とその物体番号をリスト化
         ob_name_and_index = []
@@ -339,7 +339,7 @@ def add_hand_node(dg):
         if not fastener_node:
             tool = 'gripper'
         else:
-            tool = 'driver'
+            tool = 'wrench'
 
         label = '{' + '{' + 'hand' + '}' + '|' + '{' + tool + '}' + '}'
 
@@ -579,7 +579,7 @@ def fix_object_node_list(yolo_data, comp_diff):
 
         # 1つのsteoの, 検出物体, step番号をクラスインスタンスに格納し、リストで管理
         data = yolo_data[step_index]
-        sub_graph.append(SubGraph(step, data["step%d" % step]))
+        sub_graph.append(SubGraph(step, data["frame%d" % step]))
 
         # 各ステップのsub-graphの検出物体名とその物体番号をリスト化
         ob_name_and_index = []
@@ -660,7 +660,7 @@ def fix_object_node_list(yolo_data, comp_diff):
 
 
 # load files
-yolo_file_path = './data/incorrect_work_chair.json'
+yolo_file_path = './data/yolo/incorrect_work_chair_for_exp.json'
 with open(yolo_file_path) as yf:
     _yolo_data = json.load(yf)
 

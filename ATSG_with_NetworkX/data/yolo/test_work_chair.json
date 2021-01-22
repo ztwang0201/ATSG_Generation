@@ -16,6 +16,7 @@
       "seat_plate",
       "screw",
       "screw",
+      "screw",
       "screw"
     ]
   },
@@ -24,12 +25,19 @@
     "step3":
     ["caster",
       "caster",
+      "caster",
+      "caster",
+      "caster",
       "base"
     ]
   },
   {
     "step4":
     ["caster",
+      "caster",
+      "caster",
+      "caster",
+      "caster",
       "base",
       "cylinder"
     ]
@@ -37,6 +45,10 @@
     {
     "step5":
     ["caster",
+      "caster",
+      "caster",
+      "caster",
+      "caster",
       "base",
       "cylinder",
       "back_rest",
